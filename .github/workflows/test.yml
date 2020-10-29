@@ -43,5 +43,5 @@ jobs:
           echo Git Pull Request Ref: ${{ github.event.pull_request.head.sha }}
           echo OC CLI Version: $(oc version)
           oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-          oc projects
-                    
+          oc project 7068ad-tools
+          
