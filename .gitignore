@@ -1,0 +1,11 @@
+node_modules/
+.nvm
+.DS_Store
+*.swp
+**/.scannerwork/
+**/.node-*/
+.bash_history
+
+.env
+
+.npm
