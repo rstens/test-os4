@@ -1,0 +1,41 @@
+FROM node:10
+
+RUN apt-get update
+RUN apt-get install -y curl
+RUN npm install -g npm
+
+# Create app directory
+
+ENV HOME_ROOT=/opt/app-root
+ENV HOME=/opt/app-root/src
+
+# Create DIR Structure
+# Temp File Structure
+RUN mkdir -p ${HOME_ROOT}/temp
+# Issue Files
+RUN mkdir -p ${HOME_ROOT}/temp/uploads/issues
+
+# Source DIR
+RUN mkdir -p $HOME
+
+WORKDIR $HOME_ROOT
+
+WORKDIR $HOME
+
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+
+# Bundle app source
+COPY ./ .
+
+# Cleaning any existing generated file
+
+
+VOLUME ${HOME}
+ENV PATH ${HOME}/node_modules/.bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+
+# Cleaning any existing generated file
+RUN rm -rf ./dist-server
+
+CMD [ "npm", "run", "hotload" ]

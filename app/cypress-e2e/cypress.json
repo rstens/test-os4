@@ -1,0 +1,7 @@
+{
+  "supportFile": "./cypress/support/index.ts",
+  "pluginsFile": "./cypress/plugins/index.ts",
+  "screenshotsFolder": "./cypress/results/screenshots",
+  "videosFolder": "./cypress/results/videos",
+  "projectId": "un3pv5"
+}

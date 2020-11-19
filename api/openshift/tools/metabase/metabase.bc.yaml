@@ -1,0 +1,85 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: metabase
+  namespace: 7068ad-tools
+  selfLink: /apis/template.openshift.io/v1/namespaces/7068ad-tools/templates/metabase
+  uid: 1999c7ce-6d0e-4e96-a4ab-bf3593d8bc0d
+  resourceVersion: '73237338'
+  creationTimestamp: '2020-10-29T23:17:43Z'
+  managedFields:
+    - manager: Mozilla
+      operation: Update
+      apiVersion: template.openshift.io/v1
+      time: '2020-10-29T23:17:43Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:labels':
+          .: {}
+          'f:app': {}
+          'f:build': {}
+          'f:template': {}
+        'f:objects': {}
+objects:
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: metabase
+    spec:
+      lookupPolicy:
+        local: false
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: metabase
+      labels:
+        buildconfig: metabase
+    spec:
+      output:
+        to:
+          kind: ImageStreamTag
+          name: 'metabase:latest'
+      resources:
+        limits:
+          cpu: 2000m
+          memory: 2Gi
+        requests:
+          cpu: 1000m
+          memory: 1Gi
+      successfulBuildsHistoryLimit: 3
+      failedBuildsHistoryLimit: 3
+      completionDeadlineSeconds: 600
+      strategy:
+        dockerStrategy:
+          buildArgs:
+            - name: METABASE_VERSION
+              value: latest
+          from:
+            kind: DockerImage
+            name: 'openjdk:8-jdk-alpine'
+        type: Docker
+      postCommit: {}
+      source:
+        dockerfile: >
+          FROM BuildConfig
+
+          WORKDIR /app
+
+          ENV FC_LANG=en-US \
+              LC_CTYPE=en_US.UTF-8
+          RUN apk add --update bash wget ttf-dejavu fontconfig
+
+          RUN wget -q
+          http://downloads.metabase.com/${METABASE_VERSION}/metabase.jar \
+           && chmod -R 777 /app
+          EXPOSE 3000
+
+          ENTRYPOINT ["java", "-jar", "metabase.jar"]
+        type: Dockerfile
+      triggers:
+        - type: ConfigChange
+      runPolicy: SerialLatestOnly
+labels:
+  app: metabase
+  build: metabase
+  template: metabase-bc-template

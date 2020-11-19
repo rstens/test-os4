@@ -1,0 +1,81 @@
+{
+  "generator-bcdk": {
+    "promptValues": {
+      "modules": {
+        "jenkins": {
+          "path": ".jenkins",
+          "namespace": "7068ad-tools",
+          "name": "jenkins",
+          "version": "1.0.0",
+          "environments": {
+            "build": {
+              "namespace": "7068ad-tools"
+            },
+            "dev": {
+              "namespace": "7068ad-tools"
+            },
+            "test": {
+              "namespace": "7068ad-tools"
+            },
+            "prod": {
+              "namespace": "7068ad-tools"
+            }
+          },
+          "jenkinsJobName": "_jenkins",
+          "github_owner": "bcgov",
+          "github_repo": "lucy-web",
+          "jenkinsFilePath": ".jenkins/Jenkinsfile",
+          "uuid": "a056ed1a-aff3-4477-944d-30471f610682"
+        },
+        "app": {
+          "name": "app",
+          "version": "1.0.0",
+          "path": "app",
+          "environments": {
+            "build": {
+              "namespace": "7068ad-tools"
+            },
+            "dev": {
+              "namespace": "7068ad-dev"
+            },
+            "test": {
+              "namespace": "7068ad-test"
+            },
+            "prod": {
+              "namespace": "7068ad-prod"
+            }
+          },
+          "jenkinsJobName": "app",
+          "github_owner": "bcgov",
+          "github_repo": "lucy-web",
+          "jenkinsFilePath": "app/Jenkinsfile",
+          "uuid": "6575b845-aa15-4ab0-9a6a-6b0419afab34"
+        },
+        "api": {
+          "name": "api",
+          "version": "1.0.0",
+          "path": "api",
+          "environments": {
+            "build": {
+              "namespace": "7068ad-tools"
+            },
+            "dev": {
+              "namespace": "7068ad-dev"
+            },
+            "test": {
+              "namespace": "7068ad-test"
+            },
+            "prod": {
+              "namespace": "7068ad-prod"
+            }
+          },
+          "jenkinsJobName": "api",
+          "github_owner": "bcgov",
+          "github_repo": "lucy-web",
+          "jenkinsFilePath": "api/Jenkinsfile",
+          "uuid": "db84350a-47bd-4c98-bce8-71f423b900bb"
+        }
+      }
+    }
+  }
+}
