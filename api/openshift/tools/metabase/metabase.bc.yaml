@@ -2,7 +2,7 @@ kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
   name: metabase
-  namespace: 7068ad-tools
+  namespace: 7068ad-dev
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -53,7 +53,7 @@ objects:
           RUN apk add --update bash wget ttf-dejavu fontconfig
 
           RUN wget -q
-          http://downloads.metabase.com/${METABASE_VERSION}/metabase.jar \
+          https://downloads.metabase.com/v0.37.2/metabase.jar \
            && chmod -R 777 /app
           EXPOSE 3000
 

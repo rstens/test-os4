@@ -4,21 +4,21 @@
       "modules": {
         "jenkins": {
           "path": ".jenkins",
-          "namespace": "7068ad-tools",
+          "namespace": "7068ad-dev",
           "name": "jenkins",
           "version": "1.0.0",
           "environments": {
             "build": {
-              "namespace": "7068ad-tools"
+              "namespace": "7068ad-dev"
             },
             "dev": {
-              "namespace": "7068ad-tools"
+              "namespace": "7068ad-dev"
             },
             "test": {
-              "namespace": "7068ad-tools"
+              "namespace": "7068ad-dev"
             },
             "prod": {
-              "namespace": "7068ad-tools"
+              "namespace": "7068ad-dev"
             }
           },
           "jenkinsJobName": "_jenkins",
@@ -33,7 +33,7 @@
           "path": "app",
           "environments": {
             "build": {
-              "namespace": "7068ad-tools"
+              "namespace": "7068ad-dev"
             },
             "dev": {
               "namespace": "7068ad-dev"
@@ -57,7 +57,7 @@
           "path": "api",
           "environments": {
             "build": {
-              "namespace": "7068ad-tools"
+              "namespace": "7068ad-dev"
             },
             "dev": {
               "namespace": "7068ad-dev"

@@ -34,7 +34,7 @@ module.exports = (settings)=>{
 
   const name = `${phases[phase].name}-db`
   // The building of your cool app goes here ▼▼▼
-  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.bc.yaml`, {
+  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db.bc4.yaml`, {
     'param':{
       'NAME': `${name}`,
       'NAME_SUFFIX': `${phases[phase].suffix}`,
