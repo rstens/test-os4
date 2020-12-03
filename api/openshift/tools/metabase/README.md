@@ -8,8 +8,8 @@ While Metabase does provide a Docker image [here](https://hub.docker.com/r/metab
 
 ``` sh
 export BASE_URL="https://raw.githubusercontent.com/bcgov/lucy-web/tree/dev/api/openshift/tools/metabase"
-export NAMESPACE=<YOURNAMESPACE>
-export METABASE_VERSION=v0.35.3
+export NAMESPACE=7068ad-dev
+export METABASE_VERSION=v0.37.2
 
 oc process -n $NAMESPACE -f $BASE_URL/metabase.bc.yaml -p METABASE_VERSION=$METABASE_VERSION -o yaml | oc apply -n $NAMESPACE -f -
 ```

@@ -2,24 +2,7 @@ kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
   name: metabase
-  namespace: 7068ad-tools
-  selfLink: /apis/template.openshift.io/v1/namespaces/7068ad-tools/templates/metabase
-  uid: 1999c7ce-6d0e-4e96-a4ab-bf3593d8bc0d
-  resourceVersion: '73237338'
-  creationTimestamp: '2020-10-29T23:17:43Z'
-  managedFields:
-    - manager: Mozilla
-      operation: Update
-      apiVersion: template.openshift.io/v1
-      time: '2020-10-29T23:17:43Z'
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:labels':
-          .: {}
-          'f:app': {}
-          'f:build': {}
-          'f:template': {}
-        'f:objects': {}
+  namespace: 7068ad-dev
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -70,7 +53,7 @@ objects:
           RUN apk add --update bash wget ttf-dejavu fontconfig
 
           RUN wget -q
-          http://downloads.metabase.com/${METABASE_VERSION}/metabase.jar \
+          https://downloads.metabase.com/v0.37.2/metabase.jar \
            && chmod -R 777 /app
           EXPOSE 3000
 

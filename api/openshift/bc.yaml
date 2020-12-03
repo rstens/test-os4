@@ -17,7 +17,7 @@ parameters:
   - repo:
       name: "SOURCE_REPOSITORY_URL"
       required: true
-      value: 'https://github.com/bcgov/lucy-web.git'
+      value: 'https://github.com/rstens/test-os4.git'
   - repo_ref:
       name: "SOURCE_REPOSITORY_REF"
       required: true

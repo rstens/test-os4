@@ -1,43 +1,42 @@
----
 kind: Template
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 labels:
-  app: "${NAME}"
-  template: "${NAME}-dc-template"
+  app: metabase
+  template: metabase-dc-template
 metadata:
-  name: "${NAME}"
+  name: metabase
 objects:
   - kind: Secret
     apiVersion: v1
     metadata:
-      app: "${NAME}"
-      name: "${NAME}-secret"
+      app: metabase
+      name: "metabase-secret"
       annotations:
         template.openshift.io/expose-password: "{.data['database-password']}"
-        as-copy-of: template.${NAME}-secret
+        as-copy-of: template.metabase-secret
     stringData:
       admin-email: "${ADMIN_EMAIL}"
       admin-password: "${ADMIN_PASSWORD}"
-      admin-username: "${NAME}-admin"
+      admin-username: "metabase-admin"
       embedding-secret-key: "${EMBEDDING_SECRET_KEY}"
   - kind: Secret
     apiVersion: v1
     metadata:
-      app: "${NAME}"
-      name: "postgresql-${NAME}-secret"
+      app: metabase
+      name: postgresql-metabase-secret
       annotations:
         template.openshift.io/expose-database_name: "{.data[database-name]}"
         template.openshift.io/expose-password: "{.data[database-password]}"
         template.openshift.io/expose-username: "{.data['database-user]}"
-        as-copy-of: template.postgresql-${NAME}-secret
+        as-copy-of: template.postgresql-metabase-secret
     stringData:
-      database-name: ${NAME}
+      database-name: metabase
       database-password: ${DATABASE_PASSWORD}
-      database-user: ${NAME}
+      database-user: metabase
   - kind: Service
     apiVersion: v1
     metadata:
-      name: "${NAME}"
+      name: metabase
     spec:
       ports:
         - name: 3000-tcp
@@ -45,13 +44,13 @@ objects:
           port: 3000
           targetPort: 3000
       selector:
-        app: "${NAME}"
+        app: metabase
       type: ClusterIP
       sessionAffinity: None
   - kind: Service
     apiVersion: v1
     metadata:
-      name: "postgresql-${NAME}"
+      name: postgresql-metabase
     spec:
       ports:
         - name: postgresql
@@ -59,54 +58,57 @@ objects:
           protocol: TCP
           targetPort: 5432
       selector:
-        name: "postgresql-${NAME}"
+        name: postgresql-metabase
       sessionAffinity: None
       type: ClusterIP
   - kind: Route
     apiVersion: v1
     metadata:
-      name: "${NAME}"
+      name: metabase
     spec:
-      host: "${NAME}-${NAMESPACE}.apps.silver.devops.gov.bc.ca"
+      host: "metabase-${NAMESPACE}.apps.silver.devops.gov.bc.ca"
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
       path: "/"
       to:
         kind: Service
-        name: "${NAME}"
+        name: metabase
       port:
         targetPort: 3000-tcp
       wildcardPolicy: None
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
     metadata:
-      name: "postgresql-${NAME}-data"
-      annotations:
-        volume.beta.kubernetes.io/storage-class: netapp-file-standard
+      name: postgresql-metabase
+      labels:
+        app: metabase
     spec:
       accessModes:
-        - ReadWriteMany
+        - ReadWriteOnce
       resources:
         requests:
-          storage: "${PVC_SIZE}"  
+          storage: 3Gi
+      storageClassName: netapp-file-standard
+      volumeMode: Filesystem
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
-      name: "postgresql-${NAME}"
+      name: postgresql-metabase
     spec:
       replicas: 1
       strategy:
         type: Recreate
       selector:
-        app: "${NAME}"
-        deploymentconfig: "postgresql-${NAME}"
+        app: metabase
+        deploymentconfig: postgresql-metabase
       template:
         metadata:
-          name: "postgresql-${NAME}"
+          name: postgresql-metabase
           labels:
-            app: "${NAME}"
-            deploymentconfig: "postgresql-${NAME}"
+            app: metabase
+            role: db
+            deploymentconfig: postgresql-metabase
         spec:
           containers:
             - env:
@@ -114,17 +116,17 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       key: database-user
-                      name: "postgresql-${NAME}-secret"
+                      name: postgresql-metabase-secret
                 - name: POSTGRESQL_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: database-password
-                      name: "postgresql-${NAME}-secret"
+                      name: postgresql-metabase-secret
                 - name: POSTGRESQL_DATABASE
                   valueFrom:
                     secretKeyRef:
                       key: database-name
-                      name: "postgresql-${NAME}-secret"
+                      name: postgresql-metabase-secret
               image: docker-registry.default.svc:5000/openshift/postgresql:latest
               imagePullPolicy: IfNotPresent
               livenessProbe:
@@ -160,16 +162,16 @@ objects:
               terminationMessagePolicy: File
               volumeMounts:
                 - mountPath: /var/lib/pgsql/data
-                  name: "postgresql-${NAME}-data"
+                  name: "postgresql-metabase-data"
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
           securityContext: {}
           terminationGracePeriodSeconds: 30
           volumes:
-            - name: "postgresql-${NAME}-data"
+            - name: "postgresql-metabase-data"
               persistentVolumeClaim:
-                claimName: "postgresql-${NAME}-data"
+                claimName: "postgresql-metabase-data"
       test: false
       triggers:
         - imageChangeParams:
@@ -185,20 +187,21 @@ objects:
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
-      name: "${NAME}"
+      name: metabase
     spec:
       replicas: 1
       strategy:
         type: Recreate
       selector:
-        app: "${NAME}"
-        deploymentconfig: "${NAME}"
+        app: metabase
+        deploymentconfig: metabase
       template:
         metadata:
-          name: "${NAME}"
+          name: metabase
           labels:
-            app: "${NAME}"
-            deploymentconfig: "${NAME}"
+            app: metabase
+            role: app
+            deploymentconfig: metabase
         spec:
           containers:
             - command:
@@ -210,29 +213,29 @@ objects:
                 - name: MB_DB_TYPE
                   value: postgres
                 - name: MB_DB_HOST
-                  value: postgresql-${NAME}
+                  value: postgresql-metabase
                 - name: MB_DB_DBNAME
                   valueFrom:
                     secretKeyRef:
-                      name: "postgresql-${NAME}-secret"
+                      name: postgresql-metabase-secret
                       key: database-name
                 - name: MB_DB_PORT
                   value: "5432"
                 - name: MB_DB_USER
                   valueFrom:
                     secretKeyRef:
-                      name: "postgresql-${NAME}-secret"
+                      name: postgresql-metabase-secret
                       key: database-user
                 - name: MB_DB_PASS
                   valueFrom:
                     secretKeyRef:
-                      name: "postgresql-${NAME}-secret"
+                      name: postgresql-metabase-secret
                       key: database-password
                 - name: MB_JETTY_HOST
                   value: 0.0.0.0
                 - name: MB_PASSWORD_COMPLEXITY
                   value: strong
-              image: docker-registry.default.svc:5000/${NAMESPACE}/${NAME}:${VERSION}
+              image: docker-registry.default.svc:5000/${NAMESPACE}/metabase:${VERSION}
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 3
@@ -272,18 +275,25 @@ objects:
               - metabase
             from:
               kind: ImageStreamTag
-              name: "${NAME}:${VERSION}"
-              namespace: "${NAMESPACE}"
+              name: "metabase:${VERSION}"
+              namespace: 7068ad-dev
           type: ImageChange
         - type: ConfigChange
 parameters:
+  - name: NAME
+    displayName: Credentials Name
+    description: |
+      The name used for all components of the 
+      credentials.
+    value: github-cicd
+    required: true
   - name: NAME
     displayName: Name
     description: The name assigned to all of the objects defined in this template.
     required: true
     value: metabase
   - name: NAMESPACE
-    description: Target namespace reference (i.e. '9f0fbe-dev')
+    description: Target namespace reference
     displayName: Namespace
     required: true
   - name: PR_ENVIRONMENT
